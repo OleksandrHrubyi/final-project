@@ -11,6 +11,7 @@
             autocomplete="off"
             placeholder="Enter your email"
             class="input email-input"
+            v-model="emailValue"
           />
           <input
             type="text"
@@ -18,14 +19,15 @@
             autocomplete="off"
             placeholder="Password"
             class="input"
+            v-model="passwordValue"
           />
-          <button type="button" block class="btn">
+          <button type="button" @click="userLogin" class="btn">
             Login
           </button>
           <div>
             <span class="sign-up">New to Netflix?</span>
             <nuxt-link class="registration" to="/sign-up">
-              <span>Sign In</span>
+              <span>Sign Up</span>
             </nuxt-link>
           </div>
         </form>
@@ -38,6 +40,32 @@
 import Header from '~/components/Header'
 export default {
   components: { Header },
+  data() {
+    return {
+      passwordValue: null,
+      emailValue: null,
+    }
+  },
+
+  methods: {
+    async userLogin() {
+      const params = {
+        email: this.emailValue,
+        password: this.passwordValue,
+      }
+      try {
+        await this.$auth.loginWith('local', { data: params })
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    clearInputs() {
+      this.nameValue = null
+      this.emailValu = null
+      this.passwordValue = null
+    },
+  },
 }
 </script>
 

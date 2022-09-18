@@ -14,7 +14,7 @@
           ></path>
         </svg>
       </nuxt-link>
-      <div>
+      <div v-if="!$auth.loggedIn">
         <nuxt-link class="link" to="/login">
           Login
         </nuxt-link>
@@ -23,6 +23,10 @@
           Sign-up
         </nuxt-link>
       </div>
+      <div v-else>
+        <span class="user-name">{{ this.$auth.user }}</span>
+        <button class="btn-logout" @click="logOut">Log Out</button>
+      </div>
     </div>
   </header>
 </template>
@@ -30,6 +34,12 @@
 <script>
 export default {
   name: 'Header',
+
+  methods: {
+    async logOut() {
+      await this.$auth.logout('local')
+    },
+  },
 }
 </script>
 
@@ -58,5 +68,26 @@ export default {
   max-width: 170px;
   width: 100%;
   fill: #e50914;
+}
+
+.btn-logout {
+  display: inline-block;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  color: #fff;
+  background-color: #292021;
+  border-radius: 5px;
+  transition: all 0.5s;
+}
+
+.user-name {
+  margin: 0 15px 0 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #fff;
 }
 </style>

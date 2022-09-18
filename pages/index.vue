@@ -9,12 +9,15 @@
               <h2 class="title">Unlimited movies, TV shows, and more.</h2>
               <p class="subtitle">Watch anywhere. Cancel anytime.</p>
             </div>
-            <div>
+            <div v-if="!$auth.loggedIn">
               <span class="info">
                 Ready to watch? Enter your email to log in your account.
               </span>
               <nuxt-link class="submit-btn" to="/login">Get Started</nuxt-link>
             </div>
+            <nuxt-link v-else class="submit-btn auth-btn" to="/films">
+              Show all films
+            </nuxt-link>
           </div>
         </div>
       </dir>
@@ -83,6 +86,10 @@ export default {
   border: none;
   border-radius: 5px;
   transition: all 0.5s;
+}
+
+.auth-btn {
+  background-color: rgb(60, 255, 0);
 }
 
 .submit-btn:hover {

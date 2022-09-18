@@ -9,8 +9,17 @@
             type="text"
             id="email"
             autocomplete="off"
+            placeholder="Enter your name"
+            class="input email-input"
+            v-model="nameValue"
+          />
+          <input
+            type="text"
+            id="email"
+            autocomplete="off"
             placeholder="Enter your email"
             class="input email-input"
+            v-model="emailValue"
           />
           <input
             type="text"
@@ -18,9 +27,10 @@
             autocomplete="off"
             placeholder="Password"
             class="input"
+            v-model="passwordValue"
           />
           <button type="button" @click="handleSignUp" class="btn">
-            Sign Up
+            Sign in
           </button>
           <div>
             <span class="sign-up">Not New to Netflix?</span>
@@ -38,25 +48,36 @@
 import Header from '~/components/Header'
 export default {
   components: { Header },
+  data() {
+    return {
+      nameValue: null,
+      emailValue: null,
+      passwordValue: null,
+    }
+  },
 
   methods: {
     handleSignUp() {
       console.log('hi')
       const params = {
-        method: 'POST',
-        name: 'alexs',
-        email: 'ghrt@test.ua',
-        password: 'Gralex5055',
+        name: this.nameValue,
+        email: this.emailValue,
+        password: this.passwordValue,
       }
-      fetch('http://localhost:5055/api/users/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      }).then((resp) => {
-        console.log(resp, 'resp')
+      this.$store.dispatch('user/registration', params).then((resp) => {
+        if (resp === 'success') {
+          this.$toast.success('Registration succeed')
+          this.clearInputs()
+          this.$router.push('login')
+        } else {
+          console.log(resp)
+        }
       })
+    },
+    clearInputs() {
+      this.nameValue = null
+      this.emailValu = null
+      this.passwordValue = null
     },
   },
 }
