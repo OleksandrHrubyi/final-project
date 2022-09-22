@@ -48,8 +48,8 @@ export default {
 
 .box {
   width: 100%;
+  height: 100vh;
   background-size: cover;
-  height: 800px;
   background-image: linear-gradient(
       to top,
       rgba(0, 0, 0, 0.8) 0,
@@ -59,7 +59,6 @@ export default {
     url(~/assets/images/mainbg.jpeg);
 
   background-repeat: no-repeat;
-  border-bottom: 8px solid #222;
 }
 
 .logo-icon {

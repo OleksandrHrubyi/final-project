@@ -5,12 +5,18 @@ export default {
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/toast',
-    '@nuxtjs/auth-next'
+    'cookie-universal-nuxt',
+    '@nuxtjs/auth-next',
   ],
   axios: {
     baseURL: process.env.BASE_API_URL,
   },
-
+  cookie: {
+    cookie: {
+      // (optional) If set, we check this cookie existence for loggedIn check
+      name: 'token',
+    },
+  },
   auth: {
     strategies: {
       local: {
@@ -18,19 +24,18 @@ export default {
           property: 'data.token',
           global: true,
           required: true,
-          //type: 'Bearer'
         },
         user: {
           property: 'user',
-          // autoFetch: true
         },
         endpoints: {
           login: { url: 'api/users/login', method: 'post' },
           user: { url: 'api/users/current', method: 'get' },
           logout: { url: 'api/users/logout', method: 'post' },
         }
-      }
-    }
+      },
+    },
+     plugins: [ '~/plugins/auth.js' ]
   },
   toast: {
     position: 'top-right',

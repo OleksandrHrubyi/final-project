@@ -32,12 +32,16 @@
           <button type="button" @click="handleSignUp" class="btn">
             Sign in
           </button>
+
           <div>
             <span class="sign-up">Not New to Netflix?</span>
             <nuxt-link class="registration" to="/login">
               <span>Sign Up</span>
             </nuxt-link>
           </div>
+          <a :href="getGoogleUrl(from)" class="google-auth">
+            <span>Google</span>
+          </a>
         </form>
       </div>
     </div>
@@ -46,6 +50,8 @@
 
 <script>
 import Header from '~/components/Header'
+import { getGoogleUrl } from '~/utils/getGoogleUrl'
+
 export default {
   components: { Header },
   data() {
@@ -53,12 +59,13 @@ export default {
       nameValue: null,
       emailValue: null,
       passwordValue: null,
+      from: '/',
     }
   },
 
   methods: {
+    getGoogleUrl,
     handleSignUp() {
-      console.log('hi')
       const params = {
         name: this.nameValue,
         email: this.emailValue,
@@ -70,7 +77,7 @@ export default {
           this.clearInputs()
           this.$router.push('login')
         } else {
-          console.log(resp)
+          this.$toast.error('Registration error')
         }
       })
     },

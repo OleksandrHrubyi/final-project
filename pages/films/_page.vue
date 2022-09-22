@@ -17,21 +17,12 @@
             <td class="thead-td">Actions</td>
           </tr>
         </thead>
-        <tbody v-if="getFilms && getFilms.docs">
-          <tr v-for="item in getFilms.docs" :key="item.id">
+        <tbody v-if="getFilms && getFilms.list">
+          <tr v-for="item in getFilms.list" :key="item.id">
             <td class="thead-td">{{ item.name }}</td>
             <td class="thead-td">{{ item.year ? item.year : '--' }}</td>
             <td class="thead-td">
               {{ item.favorite }}
-              <!-- <ul class="list">
-                <li
-                  class="list-item"
-                  v-for="(value, index) in item.genre"
-                  :key="index"
-                >
-                  {{ value }}
-                </li>
-              </ul> -->
             </td>
             <td class="thead-td">
               <a
@@ -44,19 +35,25 @@
               </a>
               <span v-else>--</span>
             </td>
+            <td class="thead-td">
+              <button @click="handleDeleteBtn(item)" class="td-btn">
+                Delite
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
       <client-only>
-        <div>
+        <div v-if="getFilms && getFilms.totalPage">
           <PaginationNew
-            :total="Number(2)"
-            @pagination="changePageFreecoins($event)"
+            :total="Number(getFilms.totalPage)"
+            @pagination="changePage($event)"
             :current="Number(selectedPage)"
           />
         </div>
       </client-only>
     </section>
+    {{ totalCountPage }}
     <div class="modal" v-if="openModalItem">
       <div class="modal-title-wrap">
         <p class="modal-title">New movie or TV show</p>
@@ -100,6 +97,8 @@ export default {
       filmName: '',
       filmYear: '',
       links: '',
+      totalCountPage: 1,
+      limit: 10,
       filmsArr: [
         {
           id: 1,
@@ -114,7 +113,11 @@ export default {
   },
 
   async created() {
-    await this.$store.dispatch('films/getAllFilms')
+    if (process.browser) {
+      await this.getListFilms(
+        (this.$route.params && this.$route.params.page) || 1,
+      )
+    }
   },
 
   computed: {
@@ -125,7 +128,6 @@ export default {
 
   methods: {
     addNewFilm() {
-      console.log(this.getFilms)
       this.openModalItem = true
     },
 
@@ -141,6 +143,33 @@ export default {
       await this.$store.dispatch('films/addFilm', params)
       await this.$store.dispatch('films/getAllFilms')
       this.closeModal()
+    },
+
+    async getListFilms(numberPage) {
+      const params = {
+        page: numberPage,
+      }
+      await this.$store.dispatch('films/getAllFilms', params)
+    },
+    async handleDeleteBtn(film) {
+      const params = {
+        id: film._id,
+        owner: film.owner.email,
+      }
+      await this.$store.dispatch('films/removeFilm', params)
+      this.$store.dispatch('films/getAllFilms')
+    },
+
+    changePage(page) {
+      this.selectedPage = page
+      if (process.browser) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+      const lastSlesh = this.$route.path.lastIndexOf('/')
+      this.$router.push({
+        path: `${this.$route.path.slice(0, lastSlesh + 1)}${page}`,
+      })
+      this.selectedPage = page
     },
   },
 
@@ -158,14 +187,13 @@ export default {
   padding: 16px 60px;
   margin: 0 auto;
   background-color: #f7f7fa;
-  height: 100%;
 }
 
 .box {
   position: relative;
   width: 100%;
   background-size: cover;
-  height: 800px;
+  height: 100vh;
   background-image: linear-gradient(
       to top,
       rgba(0, 0, 0, 0.8) 0,
@@ -175,7 +203,6 @@ export default {
     url(~/assets/images/mainbg.jpeg);
 
   background-repeat: no-repeat;
-  border-bottom: 8px solid #222;
 }
 
 .title-container {
@@ -256,5 +283,11 @@ export default {
   display: flex;
   flex-direction: column;
   min-width: 400px;
+}
+
+.td-btn {
+  outline: none;
+  border: none;
+  padding: 8px 12px;
 }
 </style>
